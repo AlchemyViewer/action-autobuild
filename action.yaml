@@ -145,6 +145,11 @@ runs:
       shell: bash
       run: pacman -Sy --noconfirm ${{ inputs.mysys2-packages }}
 
+    - name: Setup Ninja
+      if: ${{ runner.os == 'Linux' }}
+      shell: bash
+      run: sudo apt-get install ninja-build
+
     - name: Cache installables
       uses: actions/cache@v4
       id: cache-installables
