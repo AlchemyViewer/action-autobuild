@@ -156,6 +156,7 @@ runs:
 
     - name: Select Xcode 15.4
       if: ${{ runner.os == 'macOS' }}
+      shell: bash
       run: sudo xcode-select -s /Applications/Xcode_15.4.app/Contents/Developer
 
     - name: Cache installables
