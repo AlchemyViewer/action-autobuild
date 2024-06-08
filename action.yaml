@@ -104,13 +104,6 @@ runs:
       if: runner.os == 'Windows'
       run: git config --global core.autocrlf input
 
-    - name: Setup SSH Agent
-      uses: webfactory/ssh-agent@v0.9.0
-      if: ${{ inputs.deploy-key }}
-      with:
-        ssh-private-key: |
-          ${{ inputs.deploy-key }}
-
     - name: Checkout
       uses: actions/checkout@v4
       if: inputs.checkout
@@ -120,8 +113,17 @@ runs:
         # https://frontside.com/blog/2020-05-26-github-actions-pull_request/#how-does-pull_request-affect-actionscheckout
         ref: ${{ github.event.pull_request.head.sha || github.sha }}
         fetch-depth: ${{ fromJSON(inputs.shallow) && 1 || 0 }} # Fetch all history for SCM version
-        submodules: recursive
         lfs: true
+
+    - name: Setup SSH Agent
+      uses: webfactory/ssh-agent@v0.9.0
+      if: ${{ inputs.deploy-key }}
+      with:
+        ssh-private-key: ${{ inputs.deploy-key }}
+
+    - run: |
+        git submodule sync --recursive
+        git -c protocol.version=2 submodule update --init --force --depth=1 --recursive
 
     - name: Create short SHA
       id: sha
