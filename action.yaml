@@ -14,6 +14,9 @@ inputs:
     type: boolean
     description: Perform git checkout of build-variables
     default: true
+  deploy-key:
+    type: string
+    description: Deploy key to access private submodules
   setup-python:
     type: boolean
     description: Install python using actions/python
@@ -100,6 +103,13 @@ runs:
       shell: bash
       if: runner.os == 'Windows'
       run: git config --global core.autocrlf input
+
+    - name: Setup SSH Agent
+      uses: webfactory/ssh-agent@v0.9.0
+      if: ${{ inputs.deploy-key }}
+      with:
+        ssh-private-key: |
+          ${{ inputs.deploy-key }}
 
     - name: Checkout
       uses: actions/checkout@v4
