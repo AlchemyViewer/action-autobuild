@@ -14,9 +14,10 @@ inputs:
     type: boolean
     description: Perform git checkout of build-variables
     default: true
-  deploy-key:
+  deploy-token:
     type: string
     description: Deploy key to access private submodules
+    default: ${{ secrets.GITHUB_TOKEN }}
   setup-python:
     type: boolean
     description: Install python using actions/python
@@ -113,19 +114,9 @@ runs:
         # https://frontside.com/blog/2020-05-26-github-actions-pull_request/#how-does-pull_request-affect-actionscheckout
         ref: ${{ github.event.pull_request.head.sha || github.sha }}
         fetch-depth: ${{ fromJSON(inputs.shallow) && 1 || 0 }} # Fetch all history for SCM version
+        submodules: recursive
         lfs: true
-
-    - name: Setup SSH Agent
-      uses: webfactory/ssh-agent@v0.9.0
-      if: ${{ inputs.deploy-key }}
-      with:
-        ssh-private-key: ${{ inputs.deploy-key }}
-
-    - name: Submodule checkout
-      shell: bash
-      run: |
-        git submodule sync --recursive
-        git -c protocol.version=2 submodule update --init --force --depth=1 --recursive
+        token: ${{ inputs.deploy-token }}
 
     - name: Create short SHA
       id: sha
