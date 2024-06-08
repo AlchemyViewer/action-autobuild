@@ -58,6 +58,9 @@ inputs:
   mysys2-packages:
     type: string
     description: Additional mysys2 packages to install
+  apt-packages:
+    type: string
+    description: Additional apt packages to install
   platform:
     type: string
     description: Autobuild platform
@@ -150,9 +153,11 @@ runs:
       run: pacman -Sy --noconfirm ${{ inputs.mysys2-packages }}
 
     - name: Setup Ninja
-      if: ${{ runner.os == 'Linux' }}
+      if: ${{ runner.os == 'Linux' && inputs.apt-packages }}
       shell: bash
-      run: sudo apt-get install ninja-build
+      run: |
+        sudo apt-get update
+        sudo apt-get -y install ${{ inputs.apt-packages }}
 
     - name: Select Xcode 15.4
       if: ${{ runner.os == 'macOS' }}
