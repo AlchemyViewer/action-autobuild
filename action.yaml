@@ -111,6 +111,7 @@ runs:
         ref: ${{ github.event.pull_request.head.sha || github.sha }}
         fetch-depth: ${{ fromJSON(inputs.shallow) && 1 || 0 }} # Fetch all history for SCM version
         submodules: recursive
+        lfs: true
 
     - name: Create short SHA
       id: sha
