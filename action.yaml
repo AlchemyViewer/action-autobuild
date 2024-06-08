@@ -121,7 +121,9 @@ runs:
       with:
         ssh-private-key: ${{ inputs.deploy-key }}
 
-    - run: |
+    - name: Submodule checkout
+      shell: bash
+      run: |
         git submodule sync --recursive
         git -c protocol.version=2 submodule update --init --force --depth=1 --recursive
 
