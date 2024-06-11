@@ -193,7 +193,7 @@ runs:
 
     - name: Set up macOS code signing
       id: mac-keychain
-      if: ${{ runner.os == 'macOS' && fromJSON(inputs.setup-macos-codesign)}}
+      if: ${{ runner.os == 'macOS' && fromJSON(inputs.setup-macos-codesign) && inputs.macos-p12-base64 && inputs.macos-p12-password }}
       env:
         BUILD_CERTIFICATE_BASE64: ${{ inputs.macos-p12-base64 }}
         BUILD_CERTIFICATE_PASSWORD: ${{ inputs.macos-p12-password }}
