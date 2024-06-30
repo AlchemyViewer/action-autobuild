@@ -59,6 +59,9 @@ inputs:
     type: string
     description: Version of autobuild to install
     default: 3.*
+  pip-packages:
+    type: string
+    description: Additional pip packages to install
   mysys2-packages:
     type: string
     description: Additional mysys2 packages to install
@@ -168,6 +171,12 @@ runs:
         else
           pip install "autobuild @ git+https://github.com/secondlife/autobuild@$VERSION"
         fi
+
+    - name: Setup pip packages
+      if: ${{ inputs.pip-packages }}
+      shell: bash
+      run: |
+        pip install ${{ inputs.pip-packages }}
 
     - name: Setup mysys2
       if: ${{ runner.os == 'Windows' && inputs.mysys2-packages }}
