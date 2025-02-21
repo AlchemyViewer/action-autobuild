@@ -16,10 +16,10 @@ jobs:
   build:
     strategy:
       matrix:
-        os: [windows-2019, macos-11, ubuntu-latest]
+        os: [windows-2022, macos-15, ubuntu-22.04]
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: secondlife/action-autobuild@v3
+      - uses: secondlife/action-autobuild@v5
         with:
           autobuild-version: 3.9.0 # PyPI version or git ref
 ```
