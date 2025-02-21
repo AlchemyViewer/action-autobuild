@@ -24,7 +24,7 @@ inputs:
     default: true
   setup-autobuild:
     type: boolean
-    description: Install autobuild using secondlife/setup-autobuild
+    description: Install autobuild from pip
     default: true
   configure-args:
     type: string
@@ -42,14 +42,14 @@ inputs:
   build-variables-repo:
     type: string
     description: build-variables repository
-    default: secondlife/build-variables
+    default: AlchemyViewer/build-variables
   build-variables-ref:
     type: string
     description: build-variables repository ref
-    default: universal
+    default: main
   build-id:
     type: string
-    description: "Built id (default: commit sha)"
+    description: "Build id (default: commit sha)"
     default: SHA
   file:
     type: string
@@ -78,19 +78,6 @@ inputs:
     type: string
     description: Autobuild configuration
   artifact-name:
-    type: string
-    description: Name of artifact to upload, defaults to the autobuild package name
-  setup-macos-codesign:
-    type: boolean
-    description: Enable apple code signing for artifacts
-    default: false
-  macos-p12-base64:
-    description: The certificates in a PKCS12 file encoded as a base64 string.
-  macos-p12-password:
-    description: The password used to import the PKCS12 file.
-  macos-p12-id:
-    description: The PKCS12 identifier.
-  macos-cert-id:
     type: string
     description: Name of artifact to upload, defaults to the autobuild package name
   shallow:
@@ -190,44 +177,10 @@ runs:
         sudo apt-get update
         sudo apt-get -y install ${{ inputs.apt-packages }}
 
-    - name: Select Xcode 16.0
-      if: ${{ runner.os == 'macOS' }}
-      shell: bash
-      run: sudo xcode-select -s /Applications/Xcode_16.0.app/Contents/Developer
-
     - name: Setup Homebrew Packages
       if: ${{ runner.os == 'macOS' && inputs.brew-packages }}
       shell: bash
       run: brew install ${{ inputs.brew-packages }}
-
-    - name: Set up macOS code signing
-      id: mac-keychain
-      if: ${{ runner.os == 'macOS' && fromJSON(inputs.setup-macos-codesign) && inputs.macos-p12-base64 && inputs.macos-p12-password }}
-      env:
-        BUILD_CERTIFICATE_BASE64: ${{ inputs.macos-p12-base64 }}
-        BUILD_CERTIFICATE_PASSWORD: ${{ inputs.macos-p12-password }}
-      shell: bash
-      run: |
-        # create variables
-        CERTIFICATE_PATH=$RUNNER_TEMP/build_certificate.p12
-        KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
-        KEYCHAIN_PASSWORD=$(openssl rand -hex 32)
-        echo "::add-mask::$KEYCHAIN_PASSWORD"
-
-        # import certificate and provisioning profile from secrets
-        echo -n "$BUILD_CERTIFICATE_BASE64" | base64 --decode -o $CERTIFICATE_PATH > /dev/null 2>&1
-
-        # create temporary keychain
-        security create-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH > /dev/null 2>&1
-        security set-keychain-settings -lut 21600 $KEYCHAIN_PATH > /dev/null 2>&1
-        security unlock-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH > /dev/null 2>&1
-
-        # import certificate to keychain
-        security import $CERTIFICATE_PATH -P "$BUILD_CERTIFICATE_PASSWORD" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH > /dev/null 2>&1
-        security set-key-partition-list -S apple-tool:,apple: -k "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH > /dev/null 2>&1
-        security list-keychain -d user -s $KEYCHAIN_PATH > /dev/null 2>&1
-
-        echo "keychain-path=${KEYCHAIN_PATH}" >> $GITHUB_OUTPUT
 
     - name: Cache installables
       uses: actions/cache@v4
