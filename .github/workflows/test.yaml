@@ -61,14 +61,14 @@ jobs:
       # Test custom python version
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.10"
+          python-version: "3.13"
 
       - uses: ./
         with:
-          artifact-name: autobuild-py310-${{ matrix.os }}
+          artifact-name: autobuild-py313-${{ matrix.os }}
           setup-python: false
       - name: Check python version
         shell: bash
         run: |
           ver="$(python --version)"
-          [[ "$ver" == "Python 3.10."* ]] || exit "Expected python 3.10, got $ver"
+          [[ "$ver" == "Python 3.13."* ]] || exit "Expected python 3.13, got $ver"
