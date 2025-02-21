@@ -46,7 +46,7 @@ inputs:
   build-variables-ref:
     type: string
     description: build-variables repository ref
-    default: viewer
+    default: universal
   build-id:
     type: string
     description: "Built id (default: commit sha)"
@@ -126,7 +126,7 @@ runs:
 
     - name: Checkout
       uses: actions/checkout@v4
-      if: inputs.checkout
+      if: ${{ fromJSON(inputs.checkout) }}
       with:
         # Work around the fact that in the context of a pull request github.sha
         # references a dynamic merge commit rather than the branch head
