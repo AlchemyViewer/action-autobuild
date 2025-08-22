@@ -84,6 +84,10 @@ inputs:
     type: boolean
     description: Use shallow clone
     default: false
+  xcode-version:
+    type: string
+    description: Version of Xcode used for package builds
+    default: 16.4.0
 
 outputs:
   package-name:
@@ -146,6 +150,11 @@ runs:
       if: ${{ fromJSON(inputs.setup-python) }}
       with:
         python-version: 3.x
+
+    - name: Setup Xcode version
+      if: ${{ runner.os == 'macOS' && inputs.xcode-version }}
+      shell: bash
+      run: sudo xcode-select -s "/Applications/Xcode_${{ inputs.xcode-version }}.app"
 
     - name: Setup autobuild
       shell: bash
