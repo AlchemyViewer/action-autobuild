@@ -146,7 +146,7 @@ runs:
         path: .build-variables
 
     - name: Setup python
-      uses: actions/setup-python@v5
+      uses: actions/setup-python@v6
       if: ${{ fromJSON(inputs.setup-python) }}
       with:
         python-version: 3.x
