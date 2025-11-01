@@ -272,7 +272,7 @@ runs:
         echo "package_name=$package_name" >> $GITHUB_OUTPUT
         echo "package_platform=$package_platform" >> $GITHUB_OUTPUT
 
-    - uses: actions/upload-artifact@v4
+    - uses: actions/upload-artifact@v5
       with:
         name: ${{ inputs.artifact-name || steps.results.outputs.package_basename_no_ext }}
         path: |
