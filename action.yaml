@@ -192,7 +192,7 @@ runs:
       run: brew install ${{ inputs.brew-packages }}
 
     - name: Cache installables
-      uses: actions/cache@v4
+      uses: actions/cache@v5
       id: cache-installables
       with:
         path: ${{ github.workspace }}/.autobuild-installables
